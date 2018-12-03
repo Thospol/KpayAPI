@@ -1,9 +1,12 @@
 package dataaccessobject
 
 import (
+	"fmt"
+	"kpay/model"
 	"log"
 
 	mgo "github.com/globalsign/mgo"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type DataAccessObject struct {
@@ -16,7 +19,7 @@ var (
 )
 
 const (
-	COLLECTION = "Merchant"
+	COLLECTION = "merchants"
 )
 
 func (d *DataAccessObject) ConnectDatabase() *mgo.Database {
@@ -26,4 +29,17 @@ func (d *DataAccessObject) ConnectDatabase() *mgo.Database {
 	}
 	db = session.DB(d.Database)
 	return db
+}
+
+func (u *DataAccessObject) Insert(merchant model.Merchant) error {
+	err := db.C(COLLECTION).Insert(merchant)
+	fmt.Printf("%#v\n", merchant)
+	return err
+}
+
+func (u *DataAccessObject) FindAll() ([]model.Merchant, error) {
+	var merchants []model.Merchant
+	err := db.C(COLLECTION).Find(bson.M{}).All(&merchants)
+	fmt.Printf("%#v\n", merchants)
+	return merchants, err
 }
