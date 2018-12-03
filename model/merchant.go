@@ -5,9 +5,15 @@ import "github.com/globalsign/mgo/bson"
 type Merchant struct {
 	ID          bson.ObjectId `bson:"_id" json:"id"`
 	Name        string        `bson:"name" json:"name"`
-	BankAccount string        `bson:"name" json:"name"`
-	Username    string        `bson:"name" json:"name"`
-	Password    string        `bson:"name" json:"name"`
+	Username    string        `bson:"name" json:"username"`
+	Password    string        `bson:"name" json:"password"`
+	BankAccount []BankAccout  `bson:"name" json:"bank_account"`
+}
+
+type BankAccout struct {
+	ID            bson.ObjectId `bson:"_id" json:"id"`
+	AccountNumber string        `bson:"account_number" json:"account_number"`
+	Balance       float64       `bson:"balance" json:"balance"`
 }
 
 type Product struct {
