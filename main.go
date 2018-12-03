@@ -52,3 +52,14 @@ func CreateMerchantEndPoint(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, merchant)
 }
+
+func AllMerchantEndPoint(c *gin.Context) {
+	merchants, err := daos.FindAll()
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, merchants)
+}

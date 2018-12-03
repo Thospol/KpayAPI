@@ -7,6 +7,7 @@ func initializeRoutes() *gin.Engine {
 	r := gin.Default()
 	merchant := r.Group("/merchant")
 	merchant.POST("/register", CreateMerchantEndPoint)
+	merchant.GET("/", AllMerchantEndPoint)
 
 	return r
 }
