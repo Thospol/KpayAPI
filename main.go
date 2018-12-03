@@ -63,3 +63,14 @@ func AllMerchantEndPoint(c *gin.Context) {
 
 	c.JSON(http.StatusOK, merchants)
 }
+
+func FindByIdMerchantEndPoint(c *gin.Context) {
+
+	merchant, err := daos.FindById(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, merchant)
+}

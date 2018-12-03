@@ -43,3 +43,10 @@ func (u *DataAccessObject) FindAll() ([]model.Merchant, error) {
 	fmt.Printf("%#v\n", merchants)
 	return merchants, err
 }
+
+func (u *DataAccessObject) FindById(id string) (model.Merchant, error) {
+	var merchant model.Merchant
+	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&merchant)
+	fmt.Printf("%#v\n", merchant)
+	return merchant, err
+}
