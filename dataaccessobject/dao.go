@@ -110,5 +110,21 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 	fmt.Printf("%#v\n", merchant)
 
 	return &merchant, err
+}
 
+func (u *DataAccessObject) DeleteProductMerchant(product_id string, merchant model.Merchant) (model.Merchant, error) {
+
+	var product []model.Product
+	for _, merchants := range merchant.Products {
+		if merchants.ID == bson.ObjectIdHex(product_id) {
+			fmt.Println("Delete BankAccount.ID =", merchants.ID)
+		} else {
+			product = append(product, merchants)
+		}
+	}
+	merchant.Products = product
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+	fmt.Printf("%#v\n", merchant)
+
+	return merchant, err
 }

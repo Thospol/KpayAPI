@@ -10,7 +10,6 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 )
 
 var (
@@ -125,17 +124,7 @@ func DeleteProductMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	var product []model.Product
-	for _, merchants := range merchant.Products {
-		if merchants.ID == bson.ObjectIdHex(c.Param("product_id")) {
-			fmt.Println("Delete BankAccount.ID =", merchants.ID)
-		} else {
-			fmt.Printf("Product in merchant name:%v is v%", merchant.Name, merchants)
-			product = append(product, merchants)
-		}
-	}
-	merchant.Products = product
-	if err := daos.Update(merchant); err != nil {
+	if _, err := daos.DeleteProductMerchant(c.Param("product_id"), merchant); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
