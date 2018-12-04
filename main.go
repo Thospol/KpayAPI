@@ -154,3 +154,18 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
+
+func BasicAuthenMerchant(c *gin.Context) {
+
+	username, password, ok := c.Request.BasicAuth()
+	if ok {
+		if merchants, err := daos.FindAll(); err == nil {
+			for _, merchantsCollection := range merchants {
+				if merchantsCollection.Username == username && merchantsCollection.Password == password {
+					return
+				}
+			}
+		}
+	}
+	c.AbortWithStatus(http.StatusUnauthorized)
+}
