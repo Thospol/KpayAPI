@@ -128,5 +128,5 @@ func DeleteProductMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusCreated, map[string]string{"result": "success"})
+	c.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
