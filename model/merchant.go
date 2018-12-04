@@ -10,18 +10,3 @@ type Merchant struct {
 	BankAccount []BankAccout  `bson:"bank_account" json:"bank_account"`
 	Products    []Product     `bson:"products" json:"products"`
 }
-
-type Register struct {
-	Name        string  `bson:"name" json:"name"`
-	BankAccount string  `bson:"bank_account" json:"bank_account"`
-	Balance     float64 `bson:"balance" json:"balance"`
-}
-
-type AddProduct struct {
-	NameProduct string  `bson:"name_product" json:"name_product"`
-	Amount      float64 `bson:"amount" json:"amount"`
-}
-
-type UpdateProduct struct {
-	Amount float64 `bson:"amount" json:"amount"`
-}
