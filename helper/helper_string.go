@@ -22,3 +22,11 @@ func RandomPassword() string {
 	}
 	return string(b)
 }
+
+func MapData(merchant interface{}) interface{} {
+	data := map[string]interface{}{
+		"merchant": merchant,
+	}
+
+	return data
+}

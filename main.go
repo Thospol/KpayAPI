@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"kpay/config"
 	"kpay/dataaccessobject"
+	"kpay/helper"
 	"kpay/model"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 )
 
 var (
@@ -42,13 +42,12 @@ func CreateMerchantEndPoint(c *gin.Context) {
 		return
 	}
 
-	merchant, err := daos.Register(&register)
-	if err != nil {
+	if _, err := daos.Register(&register); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusCreated, merchant)
+	c.JSON(http.StatusCreated, map[string]string{"result": "success"})
 }
 
 func AllMerchantEndPoint(c *gin.Context) {
@@ -59,7 +58,7 @@ func AllMerchantEndPoint(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, merchants)
+	c.JSON(http.StatusOK, helper.MapData(merchants))
 }
 
 func FindByIdMerchantEndPoint(c *gin.Context) {
@@ -70,7 +69,7 @@ func FindByIdMerchantEndPoint(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, merchant)
+	c.JSON(http.StatusOK, helper.MapData(merchant))
 }
 
 func UpdateIdMerchantEndPoint(c *gin.Context) {
@@ -94,9 +93,9 @@ func UpdateIdMerchantEndPoint(c *gin.Context) {
 }
 
 func CreateProductMerchantEndPoint(c *gin.Context) {
+
 	var addproduct model.AddProduct
 	err := c.ShouldBindJSON(&addproduct)
-
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"object":  "error",
@@ -104,62 +103,16 @@ func CreateProductMerchantEndPoint(c *gin.Context) {
 		})
 		return
 	}
-
-	if addproduct.NameProduct == "" {
-		c.JSON(http.StatusBadRequest, map[string]string{"result": "please require name_product"})
+	merchant, err := daos.FindById(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	merchant, err := daos.FindById(c.Param("id"))
-	var productMerchant model.Product
-	var amountHistory model.AmountHistory
+	merchantForResponese, err := daos.AddProduct(&addproduct, merchant)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	resultAction := "ราคาเปลี่ยนแปลงแล้ว"
-	amountHistory.ID = bson.NewObjectId()
-	amountHistory.Amount = addproduct.Amount
-	amountHistory.Action = resultAction
-
-	productMerchant.ID = bson.NewObjectId()
-	productMerchant.NameProduct = addproduct.NameProduct
-	productMerchant.Amount = addproduct.Amount
-	productMerchant.AmountChange = append(productMerchant.AmountChange, amountHistory)
-	merchant.Products = append(merchant.Products, productMerchant)
-
-	if err := daos.Update(merchant); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusCreated, merchant)
+	c.JSON(http.StatusCreated, helper.MapData(merchantForResponese))
 }
-
-// func CreateBankAccountOfMerchantEndPoint(c *gin.Context) {
-
-// 	var merchantBankAcc model.BankAccout
-
-// 	merchant, err := daos.FindById(c.Param("id"))
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	errs := c.ShouldBindJSON(&merchant)
-// 	if errs != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	merchantBankAcc.ID = bson.NewObjectId()
-// 	merchant.BankAccount = append(merchant.BankAccount, merchantBankAcc)
-
-// 	if err := daos.Update(c.Param("id"), merchant); err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
-// }

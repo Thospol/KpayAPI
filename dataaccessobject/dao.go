@@ -85,3 +85,30 @@ func (u *DataAccessObject) Update(merchant model.Merchant) error {
 	fmt.Printf("%#v\n", merchant)
 	return err
 }
+
+func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant model.Merchant) (*model.Merchant, error) {
+
+	if addproduct.NameProduct == "" {
+		return nil, errors.New("please require  NameProduct")
+	}
+
+	var productMerchant model.Product
+	var amountHistory model.AmountHistory
+
+	resultAction := "ราคาเปลี่ยนแปลงแล้ว"
+	amountHistory.ID = bson.NewObjectId()
+	amountHistory.Amount = addproduct.Amount
+	amountHistory.Action = resultAction
+
+	productMerchant.ID = bson.NewObjectId()
+	productMerchant.NameProduct = addproduct.NameProduct
+	productMerchant.Amount = addproduct.Amount
+	productMerchant.AmountChange = append(productMerchant.AmountChange, amountHistory)
+	merchant.Products = append(merchant.Products, productMerchant)
+
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+	fmt.Printf("%#v\n", merchant)
+
+	return &merchant, err
+
+}
