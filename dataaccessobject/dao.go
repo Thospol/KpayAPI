@@ -1,7 +1,9 @@
 package dataaccessobject
 
 import (
+	"errors"
 	"fmt"
+	"kpay/helper"
 	"kpay/model"
 	"log"
 
@@ -37,6 +39,33 @@ func (u *DataAccessObject) Insert(merchant model.Merchant) error {
 	return err
 }
 
+func (u *DataAccessObject) Register(register *model.Register) (*model.Merchant, error) {
+	if register.Name == "" {
+		return nil, errors.New("please require  merchantName")
+	}
+	if register.BankAccount == "" {
+		return nil, errors.New("please require bankAccountofmerchant")
+	}
+
+	var merchant model.Merchant
+	var bankAccountMerchant model.BankAccout
+
+	bankAccountMerchant.ID = bson.NewObjectId()
+	bankAccountMerchant.AccountNumber = register.BankAccount
+	bankAccountMerchant.Balance = register.Balance
+
+	merchant.ID = bson.NewObjectId()
+	merchant.Name = register.Name
+	merchant.Username = helper.RandomUsername()
+	merchant.Password = helper.RandomPassword()
+
+	merchant.BankAccount = append(merchant.BankAccount, bankAccountMerchant)
+
+	err := db.C(COLLECTION).Insert(merchant)
+	fmt.Printf("%#v\n", merchant)
+	return &merchant, err
+}
+
 func (u *DataAccessObject) FindAll() ([]model.Merchant, error) {
 	var merchants []model.Merchant
 	err := db.C(COLLECTION).Find(bson.M{}).All(&merchants)
@@ -49,4 +78,10 @@ func (u *DataAccessObject) FindById(id string) (model.Merchant, error) {
 	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&merchant)
 	fmt.Printf("%#v\n", merchant)
 	return merchant, err
+}
+
+func (u *DataAccessObject) Update(merchant model.Merchant) error {
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+	fmt.Printf("%#v\n", merchant)
+	return err
 }

@@ -8,4 +8,11 @@ type Merchant struct {
 	Username    string        `bson:"username" json:"username"`
 	Password    string        `bson:"password" json:"password"`
 	BankAccount []BankAccout  `bson:"bank_account" json:"bank_account"`
+	Products    []Product     `bson:"products" json:"products"`
+}
+
+type Register struct {
+	Name        string  `bson:"name" json:"name"`
+	BankAccount string  `bson:"bank_account" json:"bank_account"`
+	Balance     float64 `bson:"balance" json:"balance"`
 }

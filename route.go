@@ -6,9 +6,10 @@ func initializeRoutes() *gin.Engine {
 
 	r := gin.Default()
 	merchant := r.Group("/merchant")
-	merchant.POST("/register", CreateMerchantEndPoint)
 	merchant.GET("/", AllMerchantEndPoint)
-	merchant.GET("/:id", FindByIdMerchantEndPoint)
-
+	merchant.POST("/register", CreateMerchantEndPoint)
+	merchant.GET("/register/:id/product", FindByIdMerchantEndPoint)
+	merchant.POST("/register/:id", UpdateIdMerchantEndPoint)
+	//merchant.POST("/register/:id/bankaccount", CreateBankAccountOfMerchantEndPoint)
 	return r
 }
