@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"kpay/config"
-	"kpay/dataaccessobject"
 	"kpay/helper"
+	"kpay/middleware"
 	"kpay/model"
 	"net/http"
 	"os"
@@ -14,7 +14,7 @@ import (
 
 var (
 	configs = config.Config{}
-	daos    = dataaccessobject.DataAccessObject{}
+	daos    = middleware.SDO
 )
 
 func init() {
@@ -153,19 +153,4 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
-}
-
-func BasicAuthenMerchant(c *gin.Context) {
-
-	username, password, ok := c.Request.BasicAuth()
-	if ok {
-		if merchants, err := daos.FindAll(); err == nil {
-			for _, merchantsCollection := range merchants {
-				if merchantsCollection.Username == username && merchantsCollection.Password == password {
-					return
-				}
-			}
-		}
-	}
-	c.AbortWithStatus(http.StatusUnauthorized)
 }

@@ -1,12 +1,16 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"kpay/middleware"
+
+	"github.com/gin-gonic/gin"
+)
 
 func initializeRoutes() *gin.Engine {
 
 	r := gin.Default()
 	merchant := r.Group("/merchant")
-	merchant.Use(BasicAuthenMerchant)
+	merchant.Use(middleware.BasicAuthenMerchant)
 	merchant.GET("/", AllMerchantEndPoint)
 	merchant.POST("/register", CreateMerchantEndPoint)
 	merchant.GET("/register/:id", FindByIdMerchantEndPoint)
