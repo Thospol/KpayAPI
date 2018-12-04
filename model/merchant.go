@@ -21,3 +21,7 @@ type AddProduct struct {
 	NameProduct string  `bson:"name_product" json:"name_product"`
 	Amount      float64 `bson:"amount" json:"amount"`
 }
+
+type UpdateProduct struct {
+	Amount float64 `bson:"amount" json:"amount"`
+}

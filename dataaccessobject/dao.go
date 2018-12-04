@@ -95,7 +95,7 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 	var productMerchant model.Product
 	var amountHistory model.AmountHistory
 
-	resultAction := "ราคาเปลี่ยนแปลงแล้ว"
+	resultAction := "ราคาเริ่มต้น"
 	amountHistory.ID = bson.NewObjectId()
 	amountHistory.Amount = addproduct.Amount
 	amountHistory.Action = resultAction
@@ -127,4 +127,33 @@ func (u *DataAccessObject) DeleteProductMerchant(product_id string, merchant mod
 	fmt.Printf("%#v\n", merchant)
 
 	return merchant, err
+}
+
+func (u *DataAccessObject) UpdateProductMerchant(product_id string, updateProductMerchant *model.UpdateProduct, merchant model.Merchant) (*model.Merchant, error) {
+	if updateProductMerchant.Amount == 0 {
+		return nil, errors.New("please require  Amount")
+	}
+	var productMerchant []model.Product
+	var amountHistory model.AmountHistory
+	resultAction := "ราคาเปลี่ยนแปลงแล้ว"
+	amountHistory.ID = bson.NewObjectId()
+	amountHistory.Action = resultAction
+	amountHistory.Amount = updateProductMerchant.Amount
+
+	for _, productMerchants := range merchant.Products {
+		if productMerchants.ID == bson.ObjectIdHex(product_id) {
+			productMerchants.Amount = updateProductMerchant.Amount
+			productMerchants.AmountChange = append(productMerchants.AmountChange, amountHistory)
+
+			productMerchant = append(productMerchant, productMerchants)
+		} else {
+			productMerchant = append(productMerchant, productMerchants)
+		}
+	}
+	merchant.Products = productMerchant
+
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+	fmt.Printf("%#v\n", merchant)
+
+	return &merchant, err
 }

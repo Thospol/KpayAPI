@@ -130,3 +130,27 @@ func DeleteProductMerchantEndPoint(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
+
+func UpdateProductMerchantEndPoint(c *gin.Context) {
+
+	merchant, err := daos.FindById(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	var updateProductMerchant model.UpdateProduct
+	if err := c.ShouldBindJSON(&updateProductMerchant); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("json: require only amount: %s", err),
+		})
+		return
+	}
+
+	if _, err := daos.UpdateProductMerchant(c.Param("product_id"), &updateProductMerchant, merchant); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"result": "success"})
+}
