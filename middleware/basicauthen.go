@@ -22,7 +22,9 @@ func BasicAuthenMerchant(c *gin.Context) {
 				}
 			}
 			c.JSON(http.StatusUnauthorized, map[string]string{"result": "username or password not correct"})
+			return
 		}
 	}
-	c.JSON(http.StatusUnauthorized, map[string]string{"result": "API has middleware BasicAuthen Please require Username and password :)"})
+	c.JSON(http.StatusUnauthorized, map[string]string{"result": "API has middleware BasicAuthen Please require Username and password:)"})
+	return
 }

@@ -51,6 +51,8 @@ func (u *DataAccessObject) Register(register *model.Register, merchantCurrentAll
 
 	var merchant model.Merchant
 	var bankAccountMerchant model.BankAccout
+	GenetateUsername := helper.StringWithMerchantset(register.Name)
+	GenetatePassword := helper.StringWithMerchantset(register.Name)
 
 	bankAccountMerchant.ID = bson.NewObjectId()
 	bankAccountMerchant.AccountNumber = register.BankAccount
@@ -58,8 +60,8 @@ func (u *DataAccessObject) Register(register *model.Register, merchantCurrentAll
 
 	merchant.ID = bson.NewObjectId()
 	merchant.Name = register.Name
-	merchant.Username = helper.RandomUsername()
-	merchant.Password = helper.RandomPassword()
+	merchant.Username = GenetateUsername
+	merchant.Password = GenetatePassword
 
 	merchant.BankAccount = append(merchant.BankAccount, bankAccountMerchant)
 

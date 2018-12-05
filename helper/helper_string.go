@@ -1,24 +1,18 @@
 package helper
 
-import "math/rand"
-
-const (
-	textForRandomUsername = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	textForRandomPassword = "0123456789@#!_-+&$M?"
+import (
+	"math/rand"
+	"time"
 )
 
-func RandomUsername() string {
-	b := make([]byte, 10)
-	for i := range b {
-		b[i] = textForRandomUsername[rand.Intn(len(textForRandomUsername))]
-	}
-	return string(b)
-}
+func StringWithMerchantset(Merchantset string) string {
 
-func RandomPassword() string {
+	var seededRand *rand.Rand = rand.New(
+		rand.NewSource(time.Now().UnixNano()))
+
 	b := make([]byte, 10)
 	for i := range b {
-		b[i] = textForRandomPassword[rand.Intn(len(textForRandomPassword))]
+		b[i] = Merchantset[seededRand.Intn(len(Merchantset))]
 	}
 	return string(b)
 }
