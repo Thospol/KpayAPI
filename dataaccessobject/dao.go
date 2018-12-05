@@ -33,12 +33,6 @@ func (d *DataAccessObject) ConnectDatabase() *mgo.Database {
 	return db
 }
 
-func (u *DataAccessObject) Insert(merchant model.Merchant) error {
-	err := db.C(COLLECTION).Insert(merchant)
-	fmt.Printf("%#v\n", merchant)
-	return err
-}
-
 func (u *DataAccessObject) Register(register *model.Register) (*model.Merchant, error) {
 	if register.Name == "" {
 		return nil, errors.New("please require  merchantName")
