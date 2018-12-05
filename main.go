@@ -8,8 +8,10 @@ import (
 	"kpay/model"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/globalsign/mgo/bson"
 )
 
 var (
@@ -158,4 +160,59 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
+}
+
+func BuyProductInMerchantEndPoint(c *gin.Context) {
+
+	var buyProduct model.BuyProduct
+	var report model.Report
+	var productSellingReport model.ProductSellingReport
+
+	merchants, err := daos.FindAll()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if err := c.ShouldBindJSON(&buyProduct); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if buyProduct.ProductName == "" {
+		c.JSON(http.StatusInternalServerError, map[string]string{"result": "please require ProductName"})
+		return
+	}
+	if buyProduct.Volume == 0 {
+		c.JSON(http.StatusInternalServerError, map[string]string{"result": "please require Volume"})
+		return
+	}
+	var priceOfProductTotal float64
+	hasProduct := false
+	for _, listOfMerchant := range merchants {
+		for _, listProductInMerchant := range listOfMerchant.Products {
+			if listProductInMerchant.NameProduct == buyProduct.ProductName {
+				productSellingReport.ID = bson.NewObjectId()
+				productSellingReport.Name = buyProduct.ProductName
+				productSellingReport.SellingVolume = buyProduct.Volume
+				priceOfProductTotal = listProductInMerchant.Amount * float64(buyProduct.Volume)
+				hasProduct = true
+			}
+		}
+	}
+	if hasProduct == false {
+		c.JSON(http.StatusInternalServerError, map[string]string{"result": "don't have Product in Merchant"})
+		return
+	}
+	report.ID = bson.NewObjectId()
+	report.Date = time.Now().Format("02-01-2006")
+	report.ProductSelling = append(report.ProductSelling, productSellingReport)
+	report.Accumulate = report.Accumulate + priceOfProductTotal
+
+	if err := daos.InsertToReport(report); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, map[string]string{"result": "success"})
 }

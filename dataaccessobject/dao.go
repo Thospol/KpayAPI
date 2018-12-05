@@ -21,7 +21,8 @@ var (
 )
 
 const (
-	COLLECTION = "merchants"
+	COLLECTION        = "merchants"
+	COLLECTION_REPORT = "reports"
 )
 
 func (d *DataAccessObject) ConnectDatabase() *mgo.Database {
@@ -160,4 +161,10 @@ func (u *DataAccessObject) UpdateProductMerchant(product_id string, updateProduc
 	fmt.Printf("%#v\n", merchant)
 
 	return &merchant, err
+}
+
+func (u *DataAccessObject) InsertToReport(report model.Report) error {
+	err := db.C(COLLECTION_REPORT).Insert(report)
+	fmt.Printf("%#v\n", report)
+	return err
 }

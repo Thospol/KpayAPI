@@ -7,8 +7,9 @@ import (
 )
 
 func main() {
-	a := StringWithMerchantset("jdfgnjtedkgfkntm")
-	fmt.Print(a)
+	// a := StringWithMerchantset("jdfgnjtedkgfkntm")
+	// fmt.Print(a)
+	fmt.Println(time.Now().Format("02-01-2006"))
 }
 
 func StringWithMerchantset(Merchantset string) string {
