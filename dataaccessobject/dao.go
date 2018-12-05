@@ -183,3 +183,9 @@ func (u *DataAccessObject) FindByIdReport(id bson.ObjectId) (model.Report, error
 	fmt.Printf("%#v\n", report)
 	return report, err
 }
+
+func (u *DataAccessObject) UpdateReport(report model.Report) error {
+	err := db.C(COLLECTION_REPORT).UpdateId(report.ID, &report)
+	fmt.Printf("%#v\n", report)
+	return err
+}

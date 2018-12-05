@@ -206,18 +206,51 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, map[string]string{"result": "don't have Product in Merchant"})
 		return
 	}
-	report.ID = bson.NewObjectId()
-	report.IDMerchant = idMerchant
-	report.Date = time.Now().Format("02-01-2006")
-	report.ProductSelling = append(report.ProductSelling, productSellingReport)
-	report.Accumulate = report.Accumulate + priceOfProductTotal
 
-	if err := daos.InsertToReport(report); err != nil {
+	reports, err := daos.FindAllReport()
+
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	hasMerchant := false
+	for _, listReport := range reports {
+		if listReport.IDMerchant == idMerchant {
+			hasMerchant = true
+			if listReport.Date == time.Now().Format("02-01-2006") {
+				report, err = daos.FindByIdReport(listReport.ID)
+				if err != nil {
+					c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+					return
+				}
+				report.Accumulate = report.Accumulate + priceOfProductTotal
+				report.ProductSelling = append(report.ProductSelling, productSellingReport)
+				err := daos.UpdateReport(report)
+				if err != nil {
+					c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+					return
+				}
+				c.JSON(http.StatusCreated, map[string]string{"result": "success"})
+			} else {
+			}
+		} else {
+			fmt.Println("NotFound!!!")
+		}
+	}
+	if hasMerchant == false {
+		report.ID = bson.NewObjectId()
+		report.IDMerchant = idMerchant
+		report.Date = time.Now().Format("02-01-2006")
+		report.ProductSelling = append(report.ProductSelling, productSellingReport)
+		report.Accumulate = report.Accumulate + priceOfProductTotal
 
-	c.JSON(http.StatusCreated, map[string]string{"result": "success"})
+		if err := daos.InsertToReport(report); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusCreated, map[string]string{"result": "success"})
+	}
 }
 
 func AllReportMerchantEndPoint(c *gin.Context) {
