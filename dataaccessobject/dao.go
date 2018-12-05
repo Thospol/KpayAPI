@@ -106,6 +106,7 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 	amountHistory.Action = resultAction
 
 	productMerchant.ID = bson.NewObjectId()
+	productMerchant.IDMerchant = merchant.ID
 	productMerchant.NameProduct = addproduct.NameProduct
 	productMerchant.Amount = addproduct.Amount
 	productMerchant.AmountChange = append(productMerchant.AmountChange, amountHistory)
@@ -167,4 +168,11 @@ func (u *DataAccessObject) InsertToReport(report model.Report) error {
 	err := db.C(COLLECTION_REPORT).Insert(report)
 	fmt.Printf("%#v\n", report)
 	return err
+}
+
+func (u *DataAccessObject) FindAllReport() ([]model.Report, error) {
+	var reports []model.Report
+	err := db.C(COLLECTION_REPORT).Find(bson.M{}).All(&reports)
+	fmt.Printf("%#v\n", reports)
+	return reports, err
 }

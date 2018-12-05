@@ -188,6 +188,7 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 		return
 	}
 	var priceOfProductTotal float64
+	var idMerchant bson.ObjectId
 	hasProduct := false
 	for _, listOfMerchant := range merchants {
 		for _, listProductInMerchant := range listOfMerchant.Products {
@@ -196,6 +197,7 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 				productSellingReport.Name = buyProduct.ProductName
 				productSellingReport.SellingVolume = buyProduct.Volume
 				priceOfProductTotal = listProductInMerchant.Amount * float64(buyProduct.Volume)
+				idMerchant = listProductInMerchant.IDMerchant
 				hasProduct = true
 			}
 		}
@@ -205,6 +207,7 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 		return
 	}
 	report.ID = bson.NewObjectId()
+	report.IDMerchant = idMerchant
 	report.Date = time.Now().Format("02-01-2006")
 	report.ProductSelling = append(report.ProductSelling, productSellingReport)
 	report.Accumulate = report.Accumulate + priceOfProductTotal
@@ -215,4 +218,16 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, map[string]string{"result": "success"})
+}
+
+func AllReportMerchantEndPoint(c *gin.Context) {
+
+	reports, err := daos.FindAllReport()
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, helper.MapDataReport(reports))
 }
