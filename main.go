@@ -32,9 +32,14 @@ func main() {
 
 func CreateMerchantEndPoint(c *gin.Context) {
 
-	var register model.Register
-	err := c.ShouldBindJSON(&register)
+	merchants, err := daos.FindAll()
 	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var register model.Register
+	if err := c.ShouldBindJSON(&register); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"object":  "error",
 			"message": fmt.Sprintf("json: wrong params: %s", err),
@@ -42,7 +47,7 @@ func CreateMerchantEndPoint(c *gin.Context) {
 		return
 	}
 
-	if _, err := daos.Register(&register); err != nil {
+	if _, err := daos.Register(&register, merchants); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}

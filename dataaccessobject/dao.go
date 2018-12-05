@@ -33,12 +33,20 @@ func (d *DataAccessObject) ConnectDatabase() *mgo.Database {
 	return db
 }
 
-func (u *DataAccessObject) Register(register *model.Register) (*model.Merchant, error) {
+func (u *DataAccessObject) Register(register *model.Register, merchantCurrentAll []model.Merchant) (*model.Merchant, error) {
 	if register.Name == "" {
 		return nil, errors.New("please require  merchantName")
 	}
 	if register.BankAccount == "" {
 		return nil, errors.New("please require bankAccountofmerchant")
+	}
+
+	for _, Listmerchants := range merchantCurrentAll {
+		for _, merchants := range Listmerchants.BankAccount {
+			if merchants.AccountNumber == register.BankAccount {
+				return nil, errors.New("BankAccount duplicate please specify new")
+			}
+		}
 	}
 
 	var merchant model.Merchant
