@@ -176,3 +176,10 @@ func (u *DataAccessObject) FindAllReport() ([]model.Report, error) {
 	fmt.Printf("%#v\n", reports)
 	return reports, err
 }
+
+func (u *DataAccessObject) FindByIdReport(id bson.ObjectId) (model.Report, error) {
+	var report model.Report
+	err := db.C(COLLECTION_REPORT).FindId(id).One(&report)
+	fmt.Printf("%#v\n", report)
+	return report, err
+}

@@ -20,7 +20,9 @@ func initializeRoutes() *gin.Engine {
 	merchant.POST("/register/:id/product", CreateProductMerchantEndPoint)
 	merchant.DELETE("/register/:id/product/:product_id", DeleteProductMerchantEndPoint)
 	merchant.POST("/register/:id/product/:product_id", UpdateProductMerchantEndPoint)
+	merchant.GET("/register/:id/report", FindByIdReportMerchantEndPoint)
 	merchant.GET("/report", AllReportMerchantEndPoint)
+
 	buy := r.Group("/buy")
 	buy.POST("/product", BuyProductInMerchantEndPoint)
 	return r

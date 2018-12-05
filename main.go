@@ -231,3 +231,26 @@ func AllReportMerchantEndPoint(c *gin.Context) {
 
 	c.JSON(http.StatusOK, helper.MapDataReport(reports))
 }
+
+func FindByIdReportMerchantEndPoint(c *gin.Context) {
+
+	reports, err := daos.FindAllReport()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	var report model.Report
+	var errR error
+	for _, listReport := range reports {
+		if listReport.IDMerchant == bson.ObjectIdHex(c.Param("id")) {
+			report, errR = daos.FindByIdReport(listReport.ID)
+			if errR != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+				return
+			}
+			c.JSON(http.StatusOK, helper.MapDataReport(report))
+		} else {
+			fmt.Println("NotFound!!!")
+		}
+	}
+}
