@@ -99,18 +99,21 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 
 	var productMerchant model.Product
 	var amountHistory model.AmountHistory
+	if len(merchant.Products) < 5 {
+		resultAction := "ราคาเริ่มต้น"
+		amountHistory.ID = bson.NewObjectId()
+		amountHistory.Amount = addproduct.Amount
+		amountHistory.Action = resultAction
 
-	resultAction := "ราคาเริ่มต้น"
-	amountHistory.ID = bson.NewObjectId()
-	amountHistory.Amount = addproduct.Amount
-	amountHistory.Action = resultAction
-
-	productMerchant.ID = bson.NewObjectId()
-	productMerchant.IDMerchant = merchant.ID
-	productMerchant.NameProduct = addproduct.NameProduct
-	productMerchant.Amount = addproduct.Amount
-	productMerchant.AmountChange = append(productMerchant.AmountChange, amountHistory)
-	merchant.Products = append(merchant.Products, productMerchant)
+		productMerchant.ID = bson.NewObjectId()
+		productMerchant.IDMerchant = merchant.ID
+		productMerchant.NameProduct = addproduct.NameProduct
+		productMerchant.Amount = addproduct.Amount
+		productMerchant.AmountChange = append(productMerchant.AmountChange, amountHistory)
+		merchant.Products = append(merchant.Products, productMerchant)
+	} else {
+		return nil, errors.New("product maximum 5 product To Merchant")
+	}
 
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
 	fmt.Printf("%#v\n", merchant)
