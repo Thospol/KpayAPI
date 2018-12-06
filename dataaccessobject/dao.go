@@ -190,11 +190,42 @@ func (u *DataAccessObject) InsertToReport(report model.Report) error {
 	return err
 }
 
+func (u *DataAccessObject) FindAllReport() ([]model.Report, error) {
+	var reports []model.Report
+	err := db.C(COLLECTION_REPORT).Find(bson.M{}).All(&reports)
+	fmt.Printf("%#v\n", reports)
+	return reports, err
+}
+
+func (u *DataAccessObject) FindByIdReport(id bson.ObjectId) (model.Report, error) {
+	var report model.Report
+	err := db.C(COLLECTION_REPORT).FindId(id).One(&report)
+	fmt.Printf("%#v\n", report)
+	return report, err
+}
+
 func (u *DataAccessObject) UpdateReport(report model.Report) error {
 	err := db.C(COLLECTION_REPORT).UpdateId(report.ID, &report)
 	fmt.Printf("%#v\n", report)
 	return err
 }
+
+func (u *DataAccessObject) ResetReport(report *model.AddReport, merchant model.Merchant) (*model.Merchant, error) {
+	if report.ProductName == "" {
+		return nil, errors.New("please require  ProductName")
+	}
+	if report.Volume == 0 {
+		return nil, errors.New("please require  Volume")
+	}
+	var reports []model.Report
+
+	merchant.Report = reports
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+
+	fmt.Printf("%#v\n", merchant)
+	return &merchant, err
+}
+
 func (u *DataAccessObject) AddReport(report *model.AddReport, merchant model.Merchant) (*model.Merchant, error) {
 	if report.ProductName == "" {
 		return nil, errors.New("please require  ProductName")
@@ -229,17 +260,37 @@ func (u *DataAccessObject) AddReport(report *model.AddReport, merchant model.Mer
 	if hasProduct == false {
 		return nil, errors.New("don't have Product in Merchant")
 	}
-	reports.ID = bson.NewObjectId()
-	reports.IDMerchant = idMerchant
-	reports.Date = time.Now().Format("02-01-2006")
-	reports.Accumulate = reports.Accumulate + totalBalance
-	reports.ProductSelling = append(reports.ProductSelling, productListSelling)
-	merchant.BankAccount[0].Balance = merchant.BankAccount[0].Balance + reports.Accumulate
-	merchant.Products = products
-	merchant.Report = append(merchant.Report, reports)
-	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
-	fmt.Printf("%#v\n", merchant)
+	hasMerchantReportToday := false
+	var reportListAll []model.Report
+	for _, merchantListReport := range merchant.Report {
+		if merchantListReport.Date == time.Now().Format("02-01-2006") {
+			hasMerchantReportToday = true
+			merchantListReport.Accumulate = merchantListReport.Accumulate + totalBalance
+			merchantListReport.ProductSelling = append(merchantListReport.ProductSelling, productListSelling)
+			merchant.BankAccount[0].Balance = merchant.BankAccount[0].Balance + merchantListReport.Accumulate
+			reportListAll = append(reportListAll, merchantListReport)
+		} else {
+			reportListAll = append(reportListAll, merchantListReport)
+		}
+	}
 
+	if hasMerchantReportToday == true {
+		merchant.Report = reportListAll
+		merchant.Products = products
+	} else {
+		reports.ID = bson.NewObjectId()
+		reports.IDMerchant = idMerchant
+		reports.Date = time.Now().Format("02-01-2006")
+		reports.Accumulate = reports.Accumulate + totalBalance
+		reports.ProductSelling = append(reports.ProductSelling, productListSelling)
+		merchant.BankAccount[0].Balance = merchant.BankAccount[0].Balance + reports.Accumulate
+		merchant.Products = products
+		reportListAll = append(reportListAll, reports)
+		merchant.Report = reportListAll
+	}
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+
+	fmt.Printf("%#v\n", merchant)
 	return &merchant, err
 }
 
