@@ -18,14 +18,14 @@ func BasicAuthenMerchant(c *gin.Context) {
 		if username == "" || password == "" {
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
-		if merchants, err := SDO.FindAll(); err == nil {
-			for _, merchantsCollection := range merchants {
-				if merchantsCollection.Username == username && merchantsCollection.Password == password {
-					return
-				}
-			}
-			c.JSON(http.StatusUnauthorized, map[string]string{"result": "username or password not correct"})
+		merchant, err := SDO.FindById(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, map[string]string{"result": "Not Found!!!"})
 		}
+		if merchant.Username == username && merchant.Password == password {
+			return
+		}
+		c.JSON(http.StatusUnauthorized, map[string]string{"result": "username or password not correct"})
 	}
 	c.AbortWithStatus(http.StatusUnauthorized)
 }

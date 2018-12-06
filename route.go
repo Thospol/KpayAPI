@@ -11,10 +11,11 @@ func initializeRoutes() *gin.Engine {
 	r := gin.Default()
 	register := r.Group("/register")
 	register.POST("/", CreateMerchantEndPoint)
+	merchants := r.Group("/merchants")
+	merchants.GET("/", AllMerchantEndPoint)
 
 	merchant := r.Group("/merchant")
 	merchant.Use(middleware.BasicAuthenMerchant)
-	merchant.GET("/", AllMerchantEndPoint)
 	merchant.GET("/:id", FindByIdMerchantEndPoint)
 	merchant.POST("/:id", UpdateIdMerchantEndPoint)
 
