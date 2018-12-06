@@ -236,3 +236,16 @@ func CreateReportMerchantEndPoint(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, helper.MapData(merchantReport))
 }
+
+func CreateUserEndPoint(c *gin.Context) {
+
+	var RequestUser model.User
+	if err := c.ShouldBindJSON(&RequestUser); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("json: wrong params: %s", err),
+		})
+		return
+	}
+	//ค่อยมาต่อ
+}
