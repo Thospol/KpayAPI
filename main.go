@@ -9,10 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	//"time"
-
 	"github.com/gin-gonic/gin"
-	//"github.com/globalsign/mgo/bson"
 )
 
 var (
