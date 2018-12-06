@@ -298,3 +298,25 @@ func FindByIdReportMerchantEndPoint(c *gin.Context) {
 		}
 	}
 }
+
+func CreateReportMerchantEndPoint(c *gin.Context) {
+
+	merchant, err := daos.FindById(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+	}
+	var addReport model.AddReport
+	if err := c.ShouldBindJSON(&addReport); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("json: wrong params: %s", err),
+		})
+		return
+	}
+	merchantReport, err := daos.AddReport(&addReport, merchant)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusCreated, helper.MapData(merchantReport))
+}

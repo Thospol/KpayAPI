@@ -16,6 +16,11 @@ type ProductSellingReport struct {
 	SellingVolume int           `bson:"selling_volume" json:"selling_volume"`
 }
 
+type AddReport struct {
+	ProductName string `bson:"product_name" json:"product_name"`
+	Volume      int    `bson:"volume" json:"volume"`
+}
+
 type BuyProduct struct {
 	ProductName string `bson:"product_name" json:"product_name"`
 	Volume      int    `bson:"volume" json:"volume"`

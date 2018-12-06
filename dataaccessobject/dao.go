@@ -6,6 +6,7 @@ import (
 	"kpay/helper"
 	"kpay/model"
 	"log"
+	"time"
 
 	mgo "github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -105,6 +106,9 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 	if addproduct.NameProduct == "" {
 		return nil, errors.New("please require  NameProduct")
 	}
+	if addproduct.Volume == 0 {
+		return nil, errors.New("please require  Volume")
+	}
 
 	var productMerchant model.Product
 	var amountHistory model.AmountHistory
@@ -118,6 +122,7 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 		productMerchant.IDMerchant = merchant.ID
 		productMerchant.NameProduct = addproduct.NameProduct
 		productMerchant.Amount = addproduct.Amount
+		productMerchant.Volume = addproduct.Volume
 		productMerchant.AmountChange = append(productMerchant.AmountChange, amountHistory)
 		merchant.Products = append(merchant.Products, productMerchant)
 	} else {
@@ -200,4 +205,51 @@ func (u *DataAccessObject) UpdateReport(report model.Report) error {
 	err := db.C(COLLECTION_REPORT).UpdateId(report.ID, &report)
 	fmt.Printf("%#v\n", report)
 	return err
+}
+func (u *DataAccessObject) AddReport(report *model.AddReport, merchant model.Merchant) (*model.Merchant, error) {
+	if report.ProductName == "" {
+		return nil, errors.New("please require  ProductName")
+	}
+	if report.Volume == 0 {
+		return nil, errors.New("please require  Volume")
+	}
+
+	var reports model.Report
+	var productListSelling model.ProductSellingReport
+	hasProduct := false
+	totalBalance := 0.0
+	var idMerchant bson.ObjectId
+	var products []model.Product
+	for _, listmerchant := range merchant.Products {
+		if listmerchant.NameProduct == report.ProductName {
+			hasProduct = true
+			if listmerchant.Volume == 0 {
+				return nil, errors.New("Sorry Product no Stock")
+			}
+			productListSelling.ID = bson.NewObjectId()
+			productListSelling.Name = report.ProductName
+			productListSelling.SellingVolume = report.Volume
+			totalBalance = listmerchant.Amount * float64(report.Volume)
+			idMerchant = listmerchant.IDMerchant
+			listmerchant.Volume = (listmerchant.Volume - report.Volume)
+			products = append(products, listmerchant)
+		} else {
+			products = append(products, listmerchant)
+		}
+	}
+	if hasProduct == false {
+		return nil, errors.New("don't have Product in Merchant")
+	}
+	reports.ID = bson.NewObjectId()
+	reports.IDMerchant = idMerchant
+	reports.Date = time.Now().Format("02-01-2006")
+	reports.Accumulate = reports.Accumulate + totalBalance
+	reports.ProductSelling = append(reports.ProductSelling, productListSelling)
+	merchant.BankAccount[0].Balance = merchant.BankAccount[0].Balance + reports.Accumulate
+	merchant.Products = products
+	merchant.Report = append(merchant.Report, reports)
+	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+	fmt.Printf("%#v\n", merchant)
+
+	return &merchant, err
 }

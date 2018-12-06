@@ -9,4 +9,5 @@ type Merchant struct {
 	Password    string        `bson:"password" json:"password"`
 	BankAccount []BankAccout  `bson:"bank_account" json:"bank_account"`
 	Products    []Product     `bson:"products" json:"products"`
+	Report      []Report      `bson:"report" json:"report"`
 }
