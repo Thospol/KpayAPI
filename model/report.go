@@ -22,6 +22,7 @@ type AddReport struct {
 }
 
 type BuyProduct struct {
-	ProductName string `bson:"product_name" json:"product_name"`
-	Volume      int    `bson:"volume" json:"volume"`
+	IDMerchant  bson.ObjectId `bson:"id_merchant" json:"id_merchant"`
+	ProductName string        `bson:"product_name" json:"product_name"`
+	Volume      int           `bson:"volume" json:"volume"`
 }

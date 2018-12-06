@@ -175,6 +175,19 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 }
 
 func BuyProductInMerchantEndPoint(c *gin.Context) {
+	var requestBuyProduct model.BuyProduct
+	if err := c.ShouldBindJSON(&requestBuyProduct); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("json: wrong params: %s", err),
+		})
+		return
+	}
+	if _, err := daos.BuyProductMerchant(&requestBuyProduct); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusCreated, map[string]string{"result": "Buy Success"})
 }
 
 func AllReportMerchantEndPoint(c *gin.Context) {
