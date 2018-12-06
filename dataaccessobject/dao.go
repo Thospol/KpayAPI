@@ -261,12 +261,28 @@ func (u *DataAccessObject) AddReport(report *model.AddReport, merchant model.Mer
 		return nil, errors.New("don't have Product in Merchant")
 	}
 	hasMerchantReportToday := false
+	hasProductNameToday := false
 	var reportListAll []model.Report
+	var sellingvolume []model.ProductSellingReport
 	for _, merchantListReport := range merchant.Report {
 		if merchantListReport.Date == time.Now().Format("02-01-2006") {
+			for _, reportsellinglist := range merchantListReport.ProductSelling {
+				if reportsellinglist.Name == report.ProductName {
+					hasProductNameToday = true
+					reportsellinglist.SellingVolume = reportsellinglist.SellingVolume + report.Volume
+					sellingvolume = append(sellingvolume, reportsellinglist)
+				} else {
+					sellingvolume = append(sellingvolume, reportsellinglist)
+				}
+			}
+
 			hasMerchantReportToday = true
+
+			if hasProductNameToday == false {
+				sellingvolume = append(sellingvolume, productListSelling)
+			}
 			merchantListReport.Accumulate = merchantListReport.Accumulate + totalBalance
-			merchantListReport.ProductSelling = append(merchantListReport.ProductSelling, productListSelling)
+			merchantListReport.ProductSelling = sellingvolume
 			merchant.BankAccount[0].Balance = merchant.BankAccount[0].Balance + merchantListReport.Accumulate
 			reportListAll = append(reportListAll, merchantListReport)
 		} else {
