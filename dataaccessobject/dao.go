@@ -85,6 +85,15 @@ func (u *DataAccessObject) FindById(id string) (model.Merchant, error) {
 	return merchant, err
 }
 
+func (u *DataAccessObject) FindProductById(merchant *model.Merchant) []model.Product {
+	var products []model.Product
+	for _, listproductsInMerchant := range merchant.Products {
+		products = append(products, listproductsInMerchant)
+	}
+	fmt.Printf("%#v\n", products)
+	return products
+}
+
 func (u *DataAccessObject) Update(merchant model.Merchant) error {
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
 	fmt.Printf("%#v\n", merchant)
