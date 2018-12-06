@@ -109,6 +109,9 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 	if addproduct.Volume == 0 {
 		return nil, errors.New("please require  Volume")
 	}
+	if addproduct.Amount == 0 {
+		return nil, errors.New("please require  Amount")
+	}
 
 	var productMerchant model.Product
 	var amountHistory model.AmountHistory
@@ -223,8 +226,8 @@ func (u *DataAccessObject) AddReport(report *model.AddReport, merchant model.Mer
 	for _, listmerchant := range merchant.Products {
 		if listmerchant.NameProduct == report.ProductName {
 			hasProduct = true
-			if listmerchant.Volume == 0 {
-				return nil, errors.New("Sorry Product no Stock")
+			if listmerchant.Volume < report.Volume {
+				return nil, errors.New("Sorry Product you need is not enough")
 			}
 			productListSelling.ID = bson.NewObjectId()
 			productListSelling.Name = report.ProductName
@@ -252,4 +255,27 @@ func (u *DataAccessObject) AddReport(report *model.AddReport, merchant model.Mer
 	fmt.Printf("%#v\n", merchant)
 
 	return &merchant, err
+}
+
+func (u *DataAccessObject) FindReportMerchant(merchant model.Merchant) ([]model.Report, error) {
+
+	var ReportResponse []model.Report
+	for _, listMerchantOfReport := range merchant.Report {
+		ReportResponse = append(ReportResponse, listMerchantOfReport)
+	}
+	return ReportResponse, nil
+}
+
+func (u *DataAccessObject) FindAllReportMerchant() ([]model.Report, error) {
+
+	var ReportResponse []model.Report
+	var merchants []model.Merchant
+	err := db.C(COLLECTION).Find(bson.M{}).All(&merchants)
+
+	for _, listMerchants := range merchants {
+		for _, listMerchant := range listMerchants.Report {
+			ReportResponse = append(ReportResponse, listMerchant)
+		}
+	}
+	return ReportResponse, err
 }

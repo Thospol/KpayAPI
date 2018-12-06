@@ -266,37 +266,30 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 
 func AllReportMerchantEndPoint(c *gin.Context) {
 
-	reports, err := daos.FindAllReport()
+	_, err := daos.FindAll()
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
+	}
+	reports, err := daos.FindAllReportMerchant()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
 
 	c.JSON(http.StatusOK, helper.MapDataReport(reports))
 }
 
 func FindByIdReportMerchantEndPoint(c *gin.Context) {
-
-	reports, err := daos.FindAllReport()
+	merchant, err := daos.FindById(c.Param("id"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-		return
 	}
-	var report model.Report
-	var errR error
-	for _, listReport := range reports {
-		if listReport.IDMerchant == bson.ObjectIdHex(c.Param("id")) {
-			report, errR = daos.FindByIdReport(listReport.ID)
-			if errR != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-				return
-			}
-			c.JSON(http.StatusOK, helper.MapDataReport(report))
-		} else {
-			fmt.Println("NotFound!!!")
-		}
+	report, err := daos.FindReportMerchant(merchant)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
+	c.JSON(http.StatusCreated, helper.MapDataReport(report))
 }
 
 func CreateReportMerchantEndPoint(c *gin.Context) {
