@@ -87,7 +87,7 @@ func FindByIdProductMerchantEndPoint(c *gin.Context) {
 	}
 	product := daos.FindProductById(&merchant)
 
-	c.JSON(http.StatusOK, helper.MapData(product))
+	c.JSON(http.StatusOK, helper.MapDataProduct(product))
 }
 
 func UpdateIdMerchantEndPoint(c *gin.Context) {

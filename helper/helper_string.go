@@ -25,6 +25,14 @@ func MapData(merchant interface{}) interface{} {
 	return data
 }
 
+func MapDataProduct(merchant interface{}) interface{} {
+	data := map[string]interface{}{
+		"Product": merchant,
+	}
+
+	return data
+}
+
 func MapDataReport(report interface{}) interface{} {
 	data := map[string]interface{}{
 		"report": report,
