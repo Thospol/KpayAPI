@@ -8,6 +8,7 @@ require (
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/gorilla/mux v1.6.2
 	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/sirupsen/logrus v1.2.0
 	github.com/ugorji/go/codec v0.0.0-20181127175209-856da096dbdf // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce

@@ -67,21 +67,18 @@ func (u *DataAccessObject) Register(register *model.Register, merchantCurrentAll
 	merchant.BankAccount = append(merchant.BankAccount, bankAccountMerchant)
 
 	err := db.C(COLLECTION).Insert(merchant)
-	fmt.Printf("%#v\n", merchant)
 	return &merchant, err
 }
 
 func (u *DataAccessObject) FindAll() ([]model.Merchant, error) {
 	var merchants []model.Merchant
 	err := db.C(COLLECTION).Find(bson.M{}).All(&merchants)
-	fmt.Printf("%#v\n", merchants)
 	return merchants, err
 }
 
 func (u *DataAccessObject) FindById(id string) (model.Merchant, error) {
 	var merchant model.Merchant
 	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&merchant)
-	fmt.Printf("%#v\n", merchant)
 	return merchant, err
 }
 
@@ -90,13 +87,11 @@ func (u *DataAccessObject) FindProductById(merchant *model.Merchant) []model.Pro
 	for _, listproductsInMerchant := range merchant.Products {
 		products = append(products, listproductsInMerchant)
 	}
-	fmt.Printf("%#v\n", products)
 	return products
 }
 
 func (u *DataAccessObject) Update(merchant model.Merchant) error {
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
-	fmt.Printf("%#v\n", merchant)
 	return err
 }
 
@@ -132,7 +127,6 @@ func (u *DataAccessObject) AddProduct(addproduct *model.AddProduct, merchant mod
 	}
 
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
-	fmt.Printf("%#v\n", merchant)
 
 	return &merchant, err
 }
@@ -149,7 +143,6 @@ func (u *DataAccessObject) DeleteProductMerchant(product_id string, merchant mod
 	}
 	merchant.Products = product
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
-	fmt.Printf("%#v\n", merchant)
 
 	return merchant, err
 }
@@ -178,7 +171,6 @@ func (u *DataAccessObject) UpdateProductMerchant(product_id string, updateProduc
 	merchant.Products = productMerchant
 
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
-	fmt.Printf("%#v\n", merchant)
 
 	return &merchant, err
 }

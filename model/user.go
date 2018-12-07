@@ -14,5 +14,5 @@ type User struct {
 	Age        int64         `bson:"age" json:"age"`
 	Email      string        `bson:"email" json:"email"`
 	Tel        string        `bson:"tel" json:"tel"`
-	BankAccout []BankAccout  `bson:"bank_account" json:"bank_account"`
+	BankAccout BankAccout    `bson:"bank_account" json:"bank_account"`
 }

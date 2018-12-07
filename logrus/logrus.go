@@ -1,10 +1,8 @@
-package main
+package logrus
 
 import (
 	"bytes"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -46,18 +44,4 @@ func (f *LogFormat) Format(entry *logrus.Entry) ([]byte, error) {
 
 	b.WriteByte('\n')
 	return b.Bytes(), nil
-}
-
-func main() {
-
-	formatter := LogFormat{}
-	formatter.TimestampFormat = "2006-01-02 15:04:05"
-
-	logrus.SetFormatter(&formatter)
-	log.SetOutput(os.Stderr)
-
-	logrus.WithFields(logrus.Fields{
-		"animal": "walrus",
-		"size":   10,
-	}).Info("Merchant")
 }
