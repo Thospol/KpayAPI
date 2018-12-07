@@ -299,7 +299,7 @@ func (u *DataAccessObject) FindAllReportMerchant() ([]model.Report, error) {
 	return ReportResponse, err
 }
 
-func (u *DataAccessObject) BuyProductMerchant(inputBuyProduct *model.BuyProduct) (*model.Merchant, error) {
+func (u *DataAccessObject) BuyProductMerchant(inputBuyProduct *model.BuyProduct, user model.User) (*model.Merchant, error) {
 	if inputBuyProduct.IDMerchant == "" {
 		return nil, errors.New("please require  IDMerchant")
 	}
@@ -309,9 +309,9 @@ func (u *DataAccessObject) BuyProductMerchant(inputBuyProduct *model.BuyProduct)
 	if inputBuyProduct.Volume == 0 {
 		return nil, errors.New("please require  Volume")
 	}
-
 	var merchant model.Merchant
-	if err := db.C(COLLECTION).FindId(inputBuyProduct.IDMerchant).One(&merchant); err != nil {
+	var err error
+	if err = db.C(COLLECTION).FindId(inputBuyProduct.IDMerchant).One(&merchant); err != nil {
 		return nil, errors.New("please require  Volume")
 	}
 
@@ -385,7 +385,10 @@ func (u *DataAccessObject) BuyProductMerchant(inputBuyProduct *model.BuyProduct)
 		reportListAll = append(reportListAll, reports)
 		merchant.Report = reportListAll
 	}
-	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+	err = db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
+
+	user.UserBankAccount[0].Balance = user.UserBankAccount[0].Balance - int64(totalBalance)
+	err = db.C(COLLECTION2).UpdateId(user.ID, &user)
 
 	return &merchant, err
 }

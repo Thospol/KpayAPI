@@ -186,6 +186,11 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 }
 
 func BuyProductInMerchantEndPoint(c *gin.Context) {
+	user,errOfUser := daos.FindByIDUser(c.Param("id"))
+	if errOfUser != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError,errOfUser.Error())
+		return
+	}
 	var requestBuyProduct model.BuyProduct
 	if err := c.ShouldBindJSON(&requestBuyProduct); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -194,7 +199,7 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 		})
 		return
 	}
-	merchantresponse, err := daos.BuyProductMerchant(&requestBuyProduct)
+	merchantresponse, err := daos.BuyProductMerchant(&requestBuyProduct,user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
