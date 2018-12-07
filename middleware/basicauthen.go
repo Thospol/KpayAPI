@@ -29,3 +29,22 @@ func BasicAuthenMerchant(c *gin.Context) {
 	}
 	c.AbortWithStatus(http.StatusUnauthorized)
 }
+
+func BasicAuthenUser(c *gin.Context) {
+
+	username, password, ok := c.Request.BasicAuth()
+	if ok {
+		if username == "" || password == "" {
+			c.AbortWithStatus(http.StatusUnauthorized)
+		}
+		user, err := SDO.FindByIDUser(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, map[string]string{"result": "Not Found!!!"})
+		}
+		if user.Username == username && user.Password == password {
+			return
+		}
+		c.JSON(http.StatusUnauthorized, map[string]string{"result": "username or password not correct"})
+	}
+	c.AbortWithStatus(http.StatusUnauthorized)
+}

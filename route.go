@@ -29,8 +29,9 @@ func initializeRoutes() *gin.Engine {
 	report := r.Group("/reports")
 	report.GET("/", AllReportMerchantEndPoint)
 
+	merchant.Use(middleware.BasicAuthenUser)
 	buy := r.Group("/buy")
-	buy.POST("/product", BuyProductInMerchantEndPoint)
+	buy.POST("/:id/product", BuyProductInMerchantEndPoint)
 
 	user := r.Group("/user")
 	user.POST("/", CreateUserEndPoint)
