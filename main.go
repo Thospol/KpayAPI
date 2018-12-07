@@ -256,12 +256,12 @@ func CreateReportMerchantEndPoint(c *gin.Context) {
 
 func CreateUserEndPoint(c *gin.Context) {
 
-	users,err := daos.FindAllUser()
+	users, err := daos.FindAllUser()
 	if err != nil {
-	   c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
-	   return
-   }
-   
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	var RequestUser model.User
 	if err := c.ShouldBindJSON(&RequestUser); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -271,9 +271,9 @@ func CreateUserEndPoint(c *gin.Context) {
 		return
 	}
 
-	userRep,errs := daos.InsertUser(&RequestUser,users)
+	userRep, errs := daos.InsertUser(&RequestUser, users)
 	if errs != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
 	logrus.LogrusUserPOST(userRep)
 	c.JSON(http.StatusCreated, map[string]string{"result": "Create Success"})
@@ -281,20 +281,62 @@ func CreateUserEndPoint(c *gin.Context) {
 
 func FindAllUserEndPoint(c *gin.Context) {
 
-	users,err := daos.FindAllUser()
+	users, err := daos.FindAllUser()
 	if err != nil {
-	   c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
-	   return
-   }
-   c.JSON(http.StatusOK, helper.MapDataUser(users))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, helper.MapDataUser(users))
 }
 
 func FindByIDUserEndPoint(c *gin.Context) {
 
-	user,err := daos.FindByIDUser(c.Param("id"))
+	user, err := daos.FindByIDUser(c.Param("id"))
 	if err != nil {
-	   c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
-	   return
-   }
-   c.JSON(http.StatusOK, helper.MapDataUser(user))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, helper.MapDataUser(user))
+}
+
+func CreateBankAccountOfuserEndPoint(c *gin.Context) {
+	users, err := daos.FindAllUser()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user, err := daos.FindByIDUser(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var bankAccountRequest model.UserBankAccount
+	if err := c.ShouldBindJSON(&bankAccountRequest); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("json: wrong params: %s", err),
+		})
+		return
+	}
+	if bankAccountRequest.BankName == "" {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"Result": "please require BankName"})
+		return
+	}
+	if bankAccountRequest.AccountNumber == "" {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"Result": "please require AccountNumber"})
+		return
+	}
+	if bankAccountRequest.Balance == 0 {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"Result": "please require Balance"})
+		return
+	}
+	if err := daos.InsertBankAccountOfUser(&bankAccountRequest,user,users); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,map[string]string{"result":"Insert BankAccount Success"})
+
 }

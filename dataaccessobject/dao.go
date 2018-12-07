@@ -414,3 +414,19 @@ func (u *DataAccessObject) InsertUser(userRequest *model.User, user []model.User
 	err := db.C(COLLECTION2).Insert(userRequest)
 	return userRequest, err
 }
+
+func (u *DataAccessObject) InsertBankAccountOfUser(bankaccountReq *model.UserBankAccount, user model.User, users []model.User) error {
+
+	var err error
+	for _, userLists := range users {
+		for _, userBankaccList := range userLists.UserBankAccount {
+			if userBankaccList.AccountNumber == bankaccountReq.AccountNumber {
+				err = errors.New("Please try again duplicate AccountNumber")
+				return err
+			}
+		}
+	}
+	user.UserBankAccount = append(user.UserBankAccount, *bankaccountReq)
+	err = db.C(COLLECTION2).UpdateId(user.ID, &user)
+	return err
+}

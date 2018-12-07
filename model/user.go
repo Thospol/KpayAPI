@@ -17,6 +17,7 @@ type User struct {
 	UserBankAccount []UserBankAccount `bson:"user_bank_account" json:"user_bank_account"`
 }
 type UserBankAccount struct {
+	BankName      string `bson:"bank_name" json:"bank_name"`
 	AccountNumber string `bson:"account_number" json:"account_number"`
 	Balance       int64  `bson:"balance" json:"balance"`
 }
