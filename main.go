@@ -59,7 +59,7 @@ func CreateMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	LogrusfMerchantPOST(merchantRespone)
+	logrus.LogrusfMerchantPOST(merchantRespone)
 	c.JSON(http.StatusCreated, map[string]string{"result": "success"})
 }
 
@@ -70,7 +70,7 @@ func AllMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	LogrusMerchantAll(merchants)
+	logrus.LogrusMerchantAll(merchants)
 	c.JSON(http.StatusOK, helper.MapData(merchants))
 }
 
@@ -81,7 +81,7 @@ func FindByIdMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	LogrusMerchantByID(merchant)
+	logrus.LogrusMerchantByID(merchant)
 	c.JSON(http.StatusOK, helper.MapData(merchant))
 }
 
@@ -103,7 +103,7 @@ func UpdateIdMerchantEndPoint(c *gin.Context) {
 		return
 	}
 
-	LogrusMerchantByID(merchant)
+	logrus.LogrusMerchantByID(merchant)
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
 
@@ -115,7 +115,7 @@ func FindByIdProductMerchantEndPoint(c *gin.Context) {
 		return
 	}
 	product := daos.FindProductById(&merchant)
-	LogrusProductOfMerchantFindList(product)
+	logrus.LogrusProductOfMerchantFindList(product)
 	c.JSON(http.StatusOK, helper.MapDataProduct(product))
 }
 
@@ -140,7 +140,7 @@ func CreateProductMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	LogrusProductPOSTPUT(merchantForResponese)
+	logrus.LogrusProductPOSTPUT(merchantForResponese)
 	c.JSON(http.StatusCreated, helper.MapData(merchantForResponese))
 }
 
@@ -156,7 +156,7 @@ func DeleteProductMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	LogrusProduct(merchantForResponese)
+	logrus.LogrusProduct(merchantForResponese)
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
 
@@ -181,7 +181,7 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	LogrusProductPOSTPUT(merchantResponse)
+	logrus.LogrusProductPOSTPUT(merchantResponse)
 	c.JSON(http.StatusOK, map[string]string{"result": "success"})
 }
 
@@ -198,7 +198,7 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
-	LogrusBuyMerchant(merchantresponse)
+	logrus.LogrusBuyMerchant(merchantresponse)
 
 	c.JSON(http.StatusCreated, map[string]string{"result": "Buy Success"})
 }
@@ -215,7 +215,7 @@ func AllReportMerchantEndPoint(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
-	LogrusReportAll(reports)
+	logrus.LogrusReportAll(reports)
 	c.JSON(http.StatusOK, helper.MapDataReport(reports))
 }
 
@@ -228,7 +228,7 @@ func FindByIdReportMerchantEndPoint(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
-	LogrusReportAll(report)
+	logrus.LogrusReportAll(report)
 	c.JSON(http.StatusCreated, helper.MapDataReport(report))
 }
 
@@ -250,7 +250,7 @@ func CreateReportMerchantEndPoint(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
-	LogrusReportPOST(merchantReport)
+	logrus.LogrusReportPOST(merchantReport)
 	c.JSON(http.StatusCreated, helper.MapData(merchantReport))
 }
 
@@ -265,104 +265,4 @@ func CreateUserEndPoint(c *gin.Context) {
 		return
 	}
 	//ค่อยมาต่อ
-}
-
-func LogrusMerchantByID(merchant model.Merchant) {
-	logr.WithFields(logr.Fields{
-		"\nmerchant.ID":          merchant.ID,
-		"\nmerchant.Name":        merchant.Name,
-		"\nmerchant.Username":    merchant.Username,
-		"\nmerchant.Password":    merchant.Password,
-		"\nmerchant.BankAccount": merchant.BankAccount,
-		"\nmerchant.Products":    merchant.Products,
-		"\nmerchant.Report":      merchant.Report,
-	}).Info("Merchant")
-}
-
-func LogrusMerchantAll(merchant []model.Merchant) {
-
-	for _, merchantList := range merchant {
-		logr.WithFields(logr.Fields{
-			"\nmerchant.ID":          merchantList.ID,
-			"\nmerchant.Name":        merchantList.Name,
-			"\nmerchant.Username":    merchantList.Username,
-			"\nmerchant.Password":    merchantList.Password,
-			"\nmerchant.BankAccount": merchantList.BankAccount,
-			"\nmerchant.Products":    merchantList.Products,
-			"\nmerchant.Report":      merchantList.Report,
-		}).Info("Merchant")
-	}
-}
-
-func LogrusProductOfMerchantFindList(product []model.Product) {
-
-	for _, prodcutList := range product {
-		logr.WithFields(logr.Fields{
-			"\nprodcutList.IDMerchant":   prodcutList.IDMerchant,
-			"\nprodcutList.ID":           prodcutList.ID,
-			"\nprodcutList.NameProduct":  prodcutList.NameProduct,
-			"\nprodcutList.Amount":       prodcutList.Amount,
-			"\nprodcutList.Volume":       prodcutList.Volume,
-			"\nprodcutList.AmountChange": prodcutList.AmountChange,
-		}).Info("Merchant -> Prodcut")
-	}
-}
-
-func LogrusfMerchantPOST(merchant *model.Merchant) {
-
-	logr.WithFields(logr.Fields{
-		"\nmerchant.ID":          merchant.ID,
-		"\nmerchant.Name":        merchant.Name,
-		"\nmerchant.Username":    merchant.Username,
-		"\nmerchant.Password":    merchant.Password,
-		"\nmerchant.BankAccount": merchant.BankAccount,
-	}).Info("Merchant")
-}
-
-func LogrusProduct(merchant model.Merchant) {
-
-	logr.WithFields(logr.Fields{
-		"\nmerchant.Products": merchant.Products,
-	}).Info("Merchant -> Prodcut")
-}
-
-func LogrusProductPOSTPUT(merchant *model.Merchant) {
-
-	logr.WithFields(logr.Fields{
-		"\nmerchant.Products": merchant.Products,
-	}).Info("Merchant -> Prodcut")
-}
-
-func LogrusBuyMerchant(merchant *model.Merchant) {
-	logr.WithFields(logr.Fields{
-		"\nmerchant.ID":          merchant.ID,
-		"\nmerchant.Name":        merchant.Name,
-		"\nmerchant.Username":    merchant.Username,
-		"\nmerchant.Password":    merchant.Password,
-		"\nmerchant.BankAccount": merchant.BankAccount,
-		"\nmerchant.Products":    merchant.Products,
-		"\nmerchant.Report":      merchant.Report,
-	}).Info("Merchant")
-}
-
-func LogrusReportAll(report []model.Report) {
-	for _, reportList := range report {
-		logr.WithFields(logr.Fields{
-			"\nreport.Date":          reportList.Date,
-			"\nreport.ID": reportList.ID,
-			"\nreport.ProductSelling":      reportList.ProductSelling,
-			"\nreport.Accumulate":      reportList.Accumulate,
-		}).Info("Merchant -> Report")
-	}
-}
-
-func LogrusReportPOST(merchant *model.Merchant) {
-	for _, listMerchantReport := range merchant.Report {
-		logr.WithFields(logr.Fields{
-			"\nreport.Date":          listMerchantReport.Date,
-			"\nreport.ID": listMerchantReport.ID,
-			"\nreport.ProductSelling":      listMerchantReport.ProductSelling,
-			"\nreport.Accumulate":      listMerchantReport.Accumulate,
-		}).Info("Merchant -> Report")
-	}
 }
