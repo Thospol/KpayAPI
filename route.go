@@ -31,5 +31,10 @@ func initializeRoutes() *gin.Engine {
 
 	buy := r.Group("/buy")
 	buy.POST("/product", BuyProductInMerchantEndPoint)
+
+	user := r.Group("/user")
+	user.POST("/", CreateUserEndPoint)
+	user.GET("/", FindAllUserEndPoint)
+	user.GET("/:id", FindByIDUserEndPoint)
 	return r
 }

@@ -37,6 +37,13 @@ func MapDataReport(report interface{}) interface{} {
 	data := map[string]interface{}{
 		"report": report,
 	}
+	return data
+}
+
+func MapDataUser(user interface{}) interface{} {
+	data := map[string]interface{}{
+		"user": user,
+	}
 
 	return data
 }

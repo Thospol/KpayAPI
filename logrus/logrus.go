@@ -146,3 +146,18 @@ func LogrusReportPOST(merchant *model.Merchant) {
 		}).Info("Merchant -> Report")
 	}
 }
+
+func LogrusUserPOST(user *model.User) {
+
+	logr.WithFields(logr.Fields{
+		"\nuser.ID":        user.ID,
+		"\nuser.FirstName": user.FirstName,
+		"\nuser.LastName":  user.LastName,
+		"\nuser.Username":  user.Username,
+		"\nuser.Password":  user.Password,
+		"\nuser.IDcard":    user.IDcard,
+		"\nuser.Age":       user.Age,
+		"\nuser.Email":     user.Email,
+		"\nuser.Tel":       user.Tel,
+	}).Info("Merchant -> User")
+}

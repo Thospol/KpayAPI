@@ -22,7 +22,8 @@ var (
 )
 
 const (
-	COLLECTION = "merchants"
+	COLLECTION2 = "users2"
+	COLLECTION  = "merchants"
 )
 
 func (d *DataAccessObject) ConnectDatabase() *mgo.Database {
@@ -387,4 +388,29 @@ func (u *DataAccessObject) BuyProductMerchant(inputBuyProduct *model.BuyProduct)
 	err := db.C(COLLECTION).UpdateId(merchant.ID, &merchant)
 
 	return &merchant, err
+}
+
+func (u *DataAccessObject) FindAllUser() ([]model.User, error) {
+	var users []model.User
+	err := db.C(COLLECTION2).Find(bson.M{}).All(&users)
+	return users, err
+}
+
+func (u *DataAccessObject) FindByIDUser(id string) (model.User, error) {
+	var user model.User
+	err := db.C(COLLECTION2).FindId(bson.ObjectIdHex(id)).One(&user)
+	return user, err
+}
+
+func (u *DataAccessObject) InsertUser(userRequest *model.User, user []model.User) (*model.User, error) {
+
+	for _, listOfusers := range user {
+		if listOfusers.Username == userRequest.Username || listOfusers.IDcard == userRequest.IDcard {
+			return nil, errors.New("Username or IDcard duplicate please specify new")
+		}
+	}
+	userRequest.ID = bson.NewObjectId()
+
+	err := db.C(COLLECTION2).Insert(userRequest)
+	return userRequest, err
 }

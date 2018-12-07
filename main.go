@@ -256,6 +256,12 @@ func CreateReportMerchantEndPoint(c *gin.Context) {
 
 func CreateUserEndPoint(c *gin.Context) {
 
+	users,err := daos.FindAllUser()
+	if err != nil {
+	   c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+	   return
+   }
+   
 	var RequestUser model.User
 	if err := c.ShouldBindJSON(&RequestUser); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -264,5 +270,31 @@ func CreateUserEndPoint(c *gin.Context) {
 		})
 		return
 	}
-	//ค่อยมาต่อ
+
+	userRep,errs := daos.InsertUser(&RequestUser,users)
+	if errs != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+	}
+	logrus.LogrusUserPOST(userRep)
+	c.JSON(http.StatusCreated, map[string]string{"result": "Create Success"})
+}
+
+func FindAllUserEndPoint(c *gin.Context) {
+
+	users,err := daos.FindAllUser()
+	if err != nil {
+	   c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+	   return
+   }
+   c.JSON(http.StatusOK, helper.MapDataUser(users))
+}
+
+func FindByIDUserEndPoint(c *gin.Context) {
+
+	user,err := daos.FindByIDUser(c.Param("id"))
+	if err != nil {
+	   c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+	   return
+   }
+   c.JSON(http.StatusOK, helper.MapDataUser(user))
 }
