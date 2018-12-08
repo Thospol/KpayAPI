@@ -364,8 +364,44 @@ func UpdateUserEndPoint(c *gin.Context) {
 	if err := daos.UpdateUser(&userReq, user); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"object":  "error",
-			"message": fmt.Sprintf("UpdateUser err because:", err),
+			"message": fmt.Sprintf("UpdateUser err because: %s", err),
 		})
 	}
 	c.JSON(http.StatusOK, map[string]string{"result": "Update Success"})
+}
+
+func DeleteUserEndPoint(c *gin.Context) {
+
+	user, err := daos.FindByIDUser(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+	}
+	if err := daos.DeleteUser(user); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"object":  "err",
+			"message": fmt.Sprintf("DeleteUser err because: %s", err),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{"result": "Delete Success"})
+}
+
+func UpdateUserBankAccountEndPoint(c *gin.Context) {
+
+	user, err := daos.FindByIDUser(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+	}
+	var userbankAccount model.UserBankAccount
+	if err := c.ShouldBindJSON(&userbankAccount); err != nil {
+
+	}
+	if err := daos.DeleteUserBankAccount(&userbankAccount, user); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"object":  "err",
+			"message": fmt.Sprintf("DeleteUser err because: %s", err),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{"result": "UpdateBankAccountOfUser Success"})
 }

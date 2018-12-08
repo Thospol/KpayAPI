@@ -39,5 +39,7 @@ func initializeRoutes() *gin.Engine {
 	user.GET("/:id", FindByIDUserEndPoint)
 	user.POST("/:id ", CreateBankAccountOfuserEndPoint)
 	user.PUT("/:id", UpdateUserEndPoint)
+	user.DELETE("/:id", DeleteUserEndPoint)
+	user.DELETE("/:id/bankAccount", UpdateUserBankAccountEndPoint)
 	return r
 }

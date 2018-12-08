@@ -468,3 +468,24 @@ func (u *DataAccessObject) UpdateUser(userreq *model.UpdateUser, user model.User
 	err := db.C(COLLECTION2).UpdateId(user.ID, &user)
 	return err
 }
+
+func (u *DataAccessObject) DeleteUser(user model.User) error {
+	err := db.C(COLLECTION2).Remove(&user)
+	return err
+}
+
+func (u *DataAccessObject) DeleteUserBankAccount(userBankAccount *model.UserBankAccount, user model.User) error {
+	if userBankAccount.AccountNumber == "" {
+		return errors.New("please require AccountNumber")
+	}
+	var userBankAccountNew []model.UserBankAccount
+	for _, userBankAccountList := range user.UserBankAccount {
+		if userBankAccountList.AccountNumber == userBankAccount.AccountNumber {
+		} else {
+			userBankAccountNew = append(userBankAccountNew, userBankAccountList)
+		}
+	}
+	user.UserBankAccount = userBankAccountNew
+	err := db.C(COLLECTION2).UpdateId(user.ID, &user)
+	return err
+}
