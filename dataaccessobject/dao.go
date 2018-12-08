@@ -433,3 +433,38 @@ func (u *DataAccessObject) InsertBankAccountOfUser(bankaccountReq *model.UserBan
 	err = db.C(COLLECTION2).UpdateId(user.ID, &user)
 	return err
 }
+
+func (u *DataAccessObject) UpdateUser(userreq *model.UpdateUser, user model.User) error {
+	if userreq.FirstName != "" {
+		user.FirstName = userreq.FirstName
+	}
+	if userreq.LastName != "" {
+		user.LastName = userreq.LastName
+	}
+	if userreq.Username != "" {
+		user.Username = userreq.Username
+	}
+	if userreq.Password != "" {
+		user.Password = userreq.Password
+	}
+	if userreq.IDcard != "" {
+		user.IDcard = userreq.IDcard
+	}
+	if userreq.Age != 0 {
+		user.Age = userreq.Age
+	}
+	if userreq.Email != "" {
+		user.Email = userreq.Email
+	}
+	if userreq.Tel != "" {
+		user.Tel = userreq.Tel
+	}
+	if userreq.BankName != "" {
+		user.UserBankAccount[0].BankName = userreq.BankName
+	}
+	if userreq.AccountNumber != "" {
+		user.UserBankAccount[0].AccountNumber = userreq.AccountNumber
+	}
+	err := db.C(COLLECTION2).UpdateId(user.ID, &user)
+	return err
+}

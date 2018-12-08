@@ -186,9 +186,9 @@ func UpdateProductMerchantEndPoint(c *gin.Context) {
 }
 
 func BuyProductInMerchantEndPoint(c *gin.Context) {
-	user,errOfUser := daos.FindByIDUser(c.Param("id"))
+	user, errOfUser := daos.FindByIDUser(c.Param("id"))
 	if errOfUser != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError,errOfUser.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, errOfUser.Error())
 		return
 	}
 	var requestBuyProduct model.BuyProduct
@@ -199,7 +199,7 @@ func BuyProductInMerchantEndPoint(c *gin.Context) {
 		})
 		return
 	}
-	merchantresponse, err := daos.BuyProductMerchant(&requestBuyProduct,user)
+	merchantresponse, err := daos.BuyProductMerchant(&requestBuyProduct, user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	}
@@ -337,11 +337,35 @@ func CreateBankAccountOfuserEndPoint(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"Result": "please require Balance"})
 		return
 	}
-	if err := daos.InsertBankAccountOfUser(&bankAccountRequest,user,users); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError,err.Error())
+	if err := daos.InsertBankAccountOfUser(&bankAccountRequest, user, users); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK,map[string]string{"result":"Insert BankAccount Success"})
+	c.JSON(http.StatusOK, map[string]string{"result": "Insert BankAccount Success"})
 
+}
+
+func UpdateUserEndPoint(c *gin.Context) {
+	user, err := daos.FindByIDUser(c.Param("id"))
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+	}
+	var userReq model.UpdateUser
+	if err := c.ShouldBindJSON(&userReq); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("json: wrong params: %s", err),
+		})
+		return
+	}
+
+	if err := daos.UpdateUser(&userReq, user); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"object":  "error",
+			"message": fmt.Sprintf("UpdateUser err because:", err),
+		})
+	}
+	c.JSON(http.StatusOK, map[string]string{"result": "Update Success"})
 }

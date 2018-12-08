@@ -16,6 +16,20 @@ type User struct {
 	Tel             string            `bson:"tel" json:"tel" binding:"required"`
 	UserBankAccount []UserBankAccount `bson:"user_bank_account" json:"user_bank_account"`
 }
+
+type UpdateUser struct {
+	FirstName     string `bson:"first_name" json:"first_name"`
+	LastName      string `bson:"last_name" json:"last_name"`
+	Username      string `bson:"username" json:"username"`
+	Password      string `bson:"password" json:"password"`
+	IDcard        string `bson:"idcard" json:"idcard"`
+	Age           int64  `bson:"age" json:"age"`
+	Email         string `bson:"email" json:"email"`
+	Tel           string `bson:"tel" json:"tel"`
+	BankName      string `bson:"bank_name" json:"bank_name"`
+	AccountNumber string `bson:"account_number" json:"account_number"`
+}
+
 type UserBankAccount struct {
 	BankName      string `bson:"bank_name" json:"bank_name"`
 	AccountNumber string `bson:"account_number" json:"account_number"`
